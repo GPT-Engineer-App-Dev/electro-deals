@@ -1,4 +1,6 @@
 import { Box, SimpleGrid, Heading } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 
 const sampleProducts = [
@@ -26,13 +28,29 @@ const sampleProducts = [
 ];
 
 const Products = () => {
+  const [filteredProducts, setFilteredProducts] = useState(sampleProducts);
+
+  const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+  };
+
+  const query = useQuery();
+  useEffect(() => {
+    const searchQuery = query.get("search") || "";
+    setFilteredProducts(
+      sampleProducts.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [query]);
+
   return (
     <Box p={4}>
       <Heading as="h2" size="xl" mb={6}>
         Products
       </Heading>
       <SimpleGrid columns={[1, 2, 3]} spacing={10}>
-        {sampleProducts.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </SimpleGrid>
